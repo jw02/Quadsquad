@@ -1,4 +1,3 @@
-# hello_world
-Time-honored tradition "hello world" initial repository
+Need to add important steps/changes we made to the libraries and codes. Ie things we learned, lessons, cool new code or routines.
 
-If coding is cool, consider me Ryan Reynolds.
+
