@@ -351,6 +351,7 @@ void loop()
 
 
 // simple interrupt service routine
+//
 void calcThrottle()
 {
   if(PCintPort::pinState)
