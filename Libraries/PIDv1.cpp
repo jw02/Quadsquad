@@ -35,12 +35,6 @@ void setOutputLimits(double Min, double Max) {
   if(Min > Max) return;
   outMin = Min;
   outMax = Max;
-
-  if(Output > outMax) Output = outMax;
-  else if(Output < outMin) Output = outMin;
-
-  if(I > outMax) I = outMax;
-  else if(I < outMin) I = outMin;
 }
 
 void setNewSampleTime(int NewSampleTime)
