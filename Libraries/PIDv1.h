@@ -32,7 +32,7 @@ class PID {
   void setTunings(double, double, double);
 
   //  actually computes the new output
-  int compute(int, int, double, double, double);
+  int compute(int, int);
 
   private:
     
