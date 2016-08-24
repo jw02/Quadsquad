@@ -5,7 +5,7 @@ class PID {
 
   public:
 
-  
+  #define NUMBER_OF_VARIABLES 10
   #define MANUAL 0
   #define AUTOMATIC 1
   #define DIRECT 0
