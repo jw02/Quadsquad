@@ -81,7 +81,7 @@ int compute(int sP, int pV){
  
 	if(!inAuto) return 999;
 	unsigned long tok = millis();
-	int tiktok = tok - tik;
+	int tiktok = tok - tik[c3];
 	
 	if(tiktok >= sampleTime){
 		double kp, ki, kd, P, D;
@@ -109,14 +109,14 @@ int compute(int sP, int pV){
 		
 		Input[c3] += Output[c3];
 		lastPV[c3] = Input[c3];
-		tik = tok;
-		c3++;
-		if(c3 > nVars) c3 = 0;
+		tik[c3] = tok;
 		
 		Input[c3] += 0.5;
 		int result = (int) Input[c3];
 		return result;
 	}
+	c3++;
+	if(c3 > nVars) c3 = 0;
 }
 
 int c4 = 0;
