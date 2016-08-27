@@ -1,16 +1,15 @@
-#ifndef PIDv1_H
-#define PIDv1_H
+#ifndef PIDv1_h
+#define PIDv1_h
 
-class PID {
+#include <Arduino.h>
 
-  public:
-
-  #define NUMBER_OF_VARIABLES 10
   #define MANUAL 0
   #define AUTOMATIC 1
   #define DIRECT 0
   #define REVERSE 1
 
+
+  const int NUMBER_OF_VARIABLES  = 10;
   
   //  functions used
 
@@ -34,9 +33,8 @@ class PID {
   //  actually computes the new output
   int compute(int, int);
 
-  private:
-    
   //  ensures the PID loop starts from the proper spot
-  void initialize();
+  void Initialize();
+
 
 #endif
