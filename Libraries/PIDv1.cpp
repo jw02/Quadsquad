@@ -76,7 +76,7 @@ void  setTunings(double Kp, double Ki, double Kd){
 //
 int c3 = 0;
 int  compute(int sP, int pV) {
- 
+
   if(!inAuto) return 999;
   unsigned long tok = millis();
   int tiktok = tok - tik[c3];
@@ -111,6 +111,7 @@ int  compute(int sP, int pV) {
     
     Input[c3] += 0.5;
     int result = (int) Input[c3];
+//Serial.println(result);
     return result;
   }
   c3++;
