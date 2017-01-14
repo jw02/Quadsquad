@@ -2,7 +2,7 @@
 #include <PIDv1.h>
 
 //  variable declarations
-int sampleTime = 1000;
+int sampleTime = 10;
 int nVars = 0;
 bool inAuto = false;
 
@@ -15,7 +15,7 @@ unsigned long tik[NUMBER_OF_VARIABLES];
 
 const int f = NUMBER_OF_VARIABLES*3;
 double tunePs[f];
-const int g = NUMBER_OF_VARIABLES*2;
+const int g = NUMBER_OF_VARIABLES;
 double outMin[g];
 double outMax[g];
 
@@ -27,12 +27,22 @@ void  setControllerDirection (int Direction) {
 
 void  setOutputLimits(double Min, double Max) {
   if(Min > Max) return;
-  outMin[(nVars*2)] = Min;
-  outMax[(nVars*2) + 1] = Max;
+  outMin[nVars] = Min;
+  outMax[nVars] = Max;
   nVars++;
 }
 
 void  setMode(int Mode) {
+//  arbitrarily chose setMode( ) to set all arrays equal to zeros
+memset(Input, 0, sizeof(Input));
+memset(Output, 0, sizeof(Output));
+memset(lastPV, 0, sizeof(lastPV));
+memset(I, 0, sizeof(I));
+memset(tik, 0, sizeof(tik));
+memset(tunePs, 0, sizeof(tunePs));
+memset(outMin, 0, sizeof(outMin));
+memset(outMax, 0, sizeof(outMax));
+
   bool newAuto = (Mode == AUTOMATIC);
   if(newAuto && !inAuto) {
      Initialize();
@@ -76,7 +86,15 @@ void  setTunings(double Kp, double Ki, double Kd){
 //
 int c3 = 0;
 int  compute(int sP, int pV) {
-
+  /**
+ Serial.print("Controller: ");
+ Serial.println(sP);
+ Serial.println("/n");
+ Serial.println("MPU: ");
+ Serial.print(pV);
+ Serial.println("/n");
+  /**/
+ 
   if(!inAuto) return 999;
   unsigned long tok = millis();
   int tiktok = tok - tik[c3];
@@ -87,42 +105,84 @@ int  compute(int sP, int pV) {
     kp = tunePs[nVars*c3];
     ki = tunePs[nVars*c3 + 1];
     kd = tunePs[nVars*c3 + 2];
+
+    /**
+    Serial.print("kP = ");
+    Serial.println(kp);
+    Serial.print("kI = ");
+    Serial.println(ki);
+    Serial.print("kD = ");
+    Serial.println(kd);
+    /**/
     
     double error = sP - pV;
+    /**
+    Serial.print("Error: ");
+    Serial.print(sP);
+    Serial.print(" - ");
+    Serial.println(pV);
+    /**/
+    
     I[c3] += ki*error;
     double dPV = (pV - lastPV[c3]);
+    //Serial.print("lastPV = ");
+    //Serial.println(lastPV[c3]);
     
     P = kp*error;
     D = -kd*dPV;
-
-    Output[c3] = P + I[c3] + D;
-    if(Output[c3] > outMax[c3*2 + 1]){
-      I[c3] -= Output[c3] - outMax[c3*2 + 1];
-      Output[c3] = outMax[c3*2 + 1];
-    }
-    else if(Output[c3] < outMin[c3*2]){
-      I[c3] += outMin[c3*2] - Output[c3];
-      Output[c3] = outMin[c3*2];
-    }
     
-    Input[c3] += Output[c3];
+    /**
+    Serial.print("P = ");
+    Serial.println(P);
+    Serial.print("I = ");
+    Serial.println(I[c3]);
+    Serial.print("D = ");
+    Serial.println(D);
+    /**/
+    
+    Output[c3] = P + I[c3] + D;
+    
+    /**
+    Serial.print("Output[");
+    Serial.print(c3);
+    Serial.print("]: ");
+    Serial.println(Output[c3]);
+    /**/
+
+    /**
+    if(Output[c3] > outMax[c3]){
+      I[c3] -= Output[c3] - outMax[c3];
+      Output[c3] = outMax[c3];
+    }
+    else if(Output[c3] < outMin[c3]){
+      I[c3] += outMin[c3] - Output[c3];
+      Output[c3] = outMin[c3];
+    }
+    /**/
+    
+    //Input[c3] += Output[c3];
     lastPV[c3] = Input[c3];
     tik[c3] = tok;
     
-    Input[c3] += 0.5;
-    int result = (int) Input[c3];
-//Serial.println(result);
+    //Input[c3] += 0.5;
+    int result = (int) Output[c3];
+    
+    c3++;
+    if(c3 > nVars) c3 = 0;
+    
+   // Serial.println(result);
     return result;
   }
-  c3++;
-  if(c3 > nVars) c3 = 0;
+  else {
+    return 0.0;
+  }
 }
 
 void  Initialize() {
   for(int i = 0; i < nVars; i++) {
     lastPV[i] = Input[i];
     I[i] = Output[i];
-    if(I[i] > outMax[i*2 + 1]) I[i] = outMax[i*2 + 1];
-    else if(I[i] < outMin[i*2]) I[i] = outMin[i*2];  
+    if(I[i] > outMax[i]) I[i] = outMax[i];
+    else if(I[i] < outMin[i]) I[i] = outMin[i];  
   }
 }
